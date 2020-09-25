@@ -1,0 +1,566 @@
+<mvc:View xmlns:core="sap.ui.core" xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" controllerName="opensap.imt.COVID19_Tracker.controller.Main"
+	xmlns:html="http://www.w3.org/1999/xhtml"
+	xmlns:semantic="sap.f.semantic"
+	xmlns:viz="sap.viz.ui5.controls"
+	xmlns:viz.data="sap.viz.ui5.data"
+	xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds"
+	xmlns:l="sap.ui.layout">
+	
+	<semantic:SemanticPage fitContent='true'>
+		<semantic:titleHeading> 
+			<l:HorizontalLayout>
+				<Avatar src="sap-icon://business-objects-experience" displaySize='S' />
+				<Title text="India COVID-19 Status" class="sapUiSmallMargin"/>
+			</l:HorizontalLayout>
+		</semantic:titleHeading>
+		<semantic:headerContent>
+			<!--<l:Grid>-->
+			<!--	<ObjectStatus title="Confirmed" text="{path:'overallStat>/cases/confirmed',type:'sap.ui.model.type.Float'}" state="Warning" icon="sap-icon://customer"/>-->
+			<!--	<ObjectStatus title="Active" text="{path:'overallStat>/cases/active',type:'sap.ui.model.type.Float'}" state="Information" icon="sap-icon://employee-pane"/>-->
+			<!--	<ObjectStatus title="Deceased" text="{path:'overallStat>/cases/deaths',type:'sap.ui.model.type.Float'}" state="Error" icon="sap-icon://employee-rejections"/>-->
+			<!--	<ObjectStatus title="Recovered" text="{path:'overallStat>/cases/recovered',type:'sap.ui.model.type.Float'}" state="Success" icon="sap-icon://hr-approval"/>-->
+			<!--</l:Grid>-->
+			<l:BlockLayout background="Light">
+				<l:BlockLayoutRow >
+					<l:BlockLayoutCell>
+						<ObjectStatus title="Confirmed" text="{path:'overallStat>/cases/confirmed',type:'sap.ui.model.type.Float'}" state="Warning" icon="sap-icon://customer"/>
+					</l:BlockLayoutCell>
+						<l:BlockLayoutCell>
+						<ObjectStatus title="Active" text="{path:'overallStat>/cases/active',type:'sap.ui.model.type.Float'}" state="Information" icon="sap-icon://employee-pane"/>
+					</l:BlockLayoutCell>
+						<l:BlockLayoutCell>
+						<ObjectStatus title="Deceased" text="{path:'overallStat>/cases/deaths',type:'sap.ui.model.type.Float'}" state="Error" icon="sap-icon://employee-rejections"/>
+					</l:BlockLayoutCell>
+						<l:BlockLayoutCell>
+						<ObjectStatus title="Recovered" text="{path:'overallStat>/cases/recovered',type:'sap.ui.model.type.Float'}"  state="Success" icon="sap-icon://hr-approval"/>
+					</l:BlockLayoutCell>
+				</l:BlockLayoutRow>
+			</l:BlockLayout>
+				
+		</semantic:headerContent>
+		
+		<semantic:content>
+			<IconTabBar id="idTabBar" select="onSelectTab">
+							<items>
+							<IconTabFilter id="List" text="State-wise Report" key="keyList">
+						
+								<Table id="idTable" width="auto" items="{/newData}" growing="true" growingScrollToLoad="true" sticky="ColumnHeaders" class="sapFSemanticPageAlignContent">
+									<headerToolbar>
+										<Toolbar>
+											<Title text="Total Cases"/>
+											<ToolbarSpacer/>
+											<SearchField id="search" placeholder="Search" width="50%" liveChange="onSearch"/>
+										</Toolbar>
+									</headerToolbar>
+									<columns>
+										<Column>
+											<!--<Text text="State"/>-->
+											<ObjectStatus text="State" state="Indication07"/>
+										</Column>
+										<Column>
+											<!--<Text text="Active"/>-->
+											<ObjectStatus text="Confirmed" state="Warning"/>
+										</Column>
+										<Column>
+											<!--<Text text="Confirmed"/>-->
+											<ObjectStatus text="Active" state="Indication05"/>
+										</Column>
+										<Column>
+											<!--<Text text="Deaths"/>-->
+											<ObjectStatus text="Deaths" state="Error"/>
+										</Column>
+										<Column>
+											<!--<Text text="Recovered"/>-->
+											<ObjectStatus text="Recovered" state="Success"/>
+										</Column>
+									</columns>
+									<items>
+										<ColumnListItem>
+											<cells>
+												<Text text="{state}"/>
+												<Text text="{path:'confirmed',type:'sap.ui.model.type.Float'}"/>
+												<Text text="{path:'active',type:'sap.ui.model.type.Float'}"/>
+												<Text text="{path:'deaths',type:'sap.ui.model.type.Float'}"/>
+												<Text text="{path:'recovered',type:'sap.ui.model.type.Float'}"/>
+											</cells>
+										</ColumnListItem>
+									</items>
+								</Table>
+									
+							</IconTabFilter>
+							
+							<IconTabFilter id="graph" text="Graphical Representation" key="keyCumGraph">
+								<l:BlockLayout background="Dashboard">
+									<l:BlockLayoutRow>
+										<l:BlockLayoutCell id="cell1">
+											<l:content>
+												<viz:VizFrame 
+													id="chart1"
+													vizType="bar"
+													vizProperties="{ title: {text : 'Total Cases', visible : true}}"
+													uiConfig="{applicationSet:'fiori'}">
+												<viz:dataset>
+													<viz.data:FlattenedDataset data="{/newData}">
+														<viz.data:dimensions>
+															<viz.data:DimensionDefinition name="State" value="{newData>state}"/>
+														</viz.data:dimensions>
+														<viz.data:measures>
+															<viz.data:MeasureDefinition name="Cases" value="{newData>confirmed}"/>
+														</viz.data:measures>
+													</viz.data:FlattenedDataset>	
+												</viz:dataset>
+												<viz:feeds>
+													<viz.feeds:FeedItem type="Dimension" uid="categoryAxis" values="State"/>
+													<viz.feeds:FeedItem type="Measure" uid="valueAxis" values="Cases"/>
+												</viz:feeds>
+											</viz:VizFrame>					
+											</l:content>
+										</l:BlockLayoutCell>
+											<l:BlockLayoutCell id="cell2">
+											<l:content>
+												<viz:VizFrame 
+													id="chart2"
+													vizType="pie"
+													vizProperties="{ title: {text : 'Total Deaths', visible : true}}"
+													uiConfig="{applicationSet:'fiori'}">
+												<viz:dataset>
+													<viz.data:FlattenedDataset data="{/newData}">
+														<viz.data:dimensions>
+															<viz.data:DimensionDefinition name="State" value="{newData>state}"/>
+														</viz.data:dimensions>
+														<viz.data:measures>
+															<viz.data:MeasureDefinition name="Cases" value="{newData>deaths}"/>
+														</viz.data:measures>
+													</viz.data:FlattenedDataset>	
+												</viz:dataset>
+												<viz:feeds>
+													<viz.feeds:FeedItem type="Dimension" uid="color" values="State"/>
+													<viz.feeds:FeedItem type="Measure" uid="size" values="Cases"/>
+												</viz:feeds>
+											</viz:VizFrame>				
+											</l:content>
+										</l:BlockLayoutCell>
+									</l:BlockLayoutRow>
+									<l:BlockLayoutRow>
+										<l:BlockLayoutCell id="cell3">
+											<l:content>
+												<viz:VizFrame 
+													id="chart3"
+													vizType="column"
+													vizProperties="{title:{text:'Total Recovered',visible:true}}"
+													uiConfig="{applicationSet:'fiori'}">
+												<viz:dataset>
+													<viz.data:FlattenedDataset data="{/newData}">
+														<viz.data:dimensions>
+															<viz.data:DimensionDefinition name="State" value="{newData>state}"/>
+														</viz.data:dimensions>
+														<viz.data:measures>
+															<viz.data:MeasureDefinition name="Cases" value="{newData>recovered}"/>
+														</viz.data:measures>
+													</viz.data:FlattenedDataset>	
+												</viz:dataset>
+												<viz:feeds>
+													<viz.feeds:FeedItem type="Dimension" uid="categoryAxis" values="State"/>
+													<viz.feeds:FeedItem type="Measure" uid="valueAxis" values="Cases"/>
+												</viz:feeds>
+											</viz:VizFrame>					
+											</l:content>
+										</l:BlockLayoutCell>
+											<l:BlockLayoutCell id="cell4">
+											<l:content>
+												<viz:VizFrame 
+													id="chart4"
+													vizType="donut"
+													vizProperties="{title:{text:'Foreign Cases',visible:true}}"
+													uiConfig="{applicationSet:'fiori'}">
+												<viz:dataset>
+													<viz.data:FlattenedDataset data="{/newData}">
+														<viz.data:dimensions>
+															<viz.data:DimensionDefinition name="State" value="{newData>state}"/>
+														</viz.data:dimensions>
+														<viz.data:measures>
+															<viz.data:MeasureDefinition name="Cases" value="{newData>migratedother}"/>
+														</viz.data:measures>
+													</viz.data:FlattenedDataset>	
+												</viz:dataset>
+												<viz:feeds>
+													<viz.feeds:FeedItem type="Dimension" uid="color" values="State"/>
+													<viz.feeds:FeedItem type="Measure" uid="size" values="Cases"/>
+												</viz:feeds>
+											</viz:VizFrame>				
+											</l:content>
+										</l:BlockLayoutCell>
+									</l:BlockLayoutRow>
+								</l:BlockLayout>	
+							
+							</IconTabFilter>
+							<IconTabFilter id="dailyAlltab" text="India Trend" key="keyDailyGraph">
+								<!--<ComboBox id="comboBoxGraphAll"-->
+								<!--	items="{Mode>/mode}"-->
+								<!--	selectedKey="{Mode>/mode/0/key}"-->
+								<!--	change="onModeChangeAll">-->
+								<!--	<core:ListItem key="{Mode>key}" text="{Mode>text}"/>-->
+								<!--</ComboBox>-->
+								<Select id="idSelectModeAll"
+										selectedKey="Daily"
+										change="onModeChangeAll">
+									<core:Item key="Daily" text="Daily"/>
+									<core:Item key="Cumulative" text="Cumulative"/>
+								</Select>
+								<l:BlockLayout background="Dashboard">
+									<l:BlockLayoutRow>
+										<l:BlockLayoutCell id="AllStateDailyLayCon">
+											<l:content>
+												<viz:VizFrame
+													id="dailyConfirmedAll"
+													vizType="timeseries_column"
+													visible="false"
+													vizProperties="{
+														title:{text:'Confirmed Cases',visible:true},
+														dataLabel:{visible:true,showTotal:true}
+															}"
+													uiConfig="{applicationSet:'fiori'}">
+																<viz:dataset>
+																	<viz.data:FlattenedDataset data="{/dailyDataAll}">
+																		<viz.data:dimensions>
+																			<viz.data:DimensionDefinition name="Date" value="{dailyDataAll>date}" dataType="date"/>
+																		</viz.data:dimensions>
+																		<viz.data:measures>
+																			<viz.data:MeasureDefinition name="Cases" value="{dailyDataAll>dailyconfirmed}"/>
+																		</viz.data:measures>
+																	</viz.data:FlattenedDataset>	
+																</viz:dataset>
+																<viz:feeds>
+																	<viz.feeds:FeedItem type="Dimension" uid="timeAxis" values="Date"/>
+																	<viz.feeds:FeedItem type="Measure" uid="valueAxis" values="Cases"/>
+																</viz:feeds>
+												</viz:VizFrame>
+											</l:content>
+										</l:BlockLayoutCell>
+								</l:BlockLayoutRow>
+								
+								<l:BlockLayoutRow>
+									<l:BlockLayoutCell id="AllStateDailyLayDec">
+										<l:content>
+									<viz:VizFrame
+									id="dailyDeceasedAll"
+									vizType="timeseries_column"
+									visible="false"
+									vizProperties="{
+										title:
+											{text:'Deaths',visible:true}
+											}"
+									uiConfig="{applicationSet:'fiori'}">
+												<viz:dataset>
+													<viz.data:FlattenedDataset data="{/dailyDataAll}">
+														<viz.data:dimensions>
+															<viz.data:DimensionDefinition name="Date" value="{dailyDataAll>date}" dataType="date"/>
+														</viz.data:dimensions>
+														<viz.data:measures>
+															<viz.data:MeasureDefinition name="Cases" value="{dailyDataAll>dailydeceased}"/>
+														</viz.data:measures>
+													</viz.data:FlattenedDataset>	
+												</viz:dataset>
+												<viz:feeds>
+													<viz.feeds:FeedItem type="Dimension" uid="timeAxis" values="Date"/>
+													<viz.feeds:FeedItem type="Measure" uid="valueAxis" values="Cases"/>
+												</viz:feeds>
+								</viz:VizFrame>
+								</l:content>
+								</l:BlockLayoutCell>
+								</l:BlockLayoutRow>
+								<l:BlockLayoutRow>
+									<l:BlockLayoutCell id="AllStateDailyLayRec">
+										<l:content>
+								<viz:VizFrame
+									id="dailyRecoveredAll"
+									vizType="timeseries_column"
+									visible="false"
+									vizProperties="{
+										title:
+											{text:'Recovered',visible:true}
+											}"
+									uiConfig="{applicationSet:'fiori'}">
+												<viz:dataset>
+													<viz.data:FlattenedDataset data="{/dailyDataAll}">
+														<viz.data:dimensions>
+															<viz.data:DimensionDefinition name="Date" value="{dailyDataAll>date}" dataType="date"/>
+														</viz.data:dimensions>
+														<viz.data:measures>
+															<viz.data:MeasureDefinition name="Cases" value="{dailyDataAll>dailyrecovered}"/>
+														</viz.data:measures>
+													</viz.data:FlattenedDataset>	
+												</viz:dataset>
+												<viz:feeds>
+													<viz.feeds:FeedItem type="Dimension" uid="timeAxis" values="Date"/>
+													<viz.feeds:FeedItem type="Measure" uid="valueAxis" values="Cases"/>
+												</viz:feeds>
+								</viz:VizFrame>
+									</l:content>
+										</l:BlockLayoutCell>
+								</l:BlockLayoutRow>
+								<l:BlockLayoutRow>
+									<l:BlockLayoutCell id="AllStateCumLayCon">
+										<l:content>
+									<viz:VizFrame
+									id="cumulConfirmedAll"
+									vizType="timeseries_column"
+									visible="false"
+									vizProperties="{
+										title:{text:'Confirmed Cases',visible:true}
+											}"
+									uiConfig="{applicationSet:'fiori'}">
+												<viz:dataset>
+													<viz.data:FlattenedDataset data="{/dailyDataAll}">
+														<viz.data:dimensions>
+															<viz.data:DimensionDefinition name="Date" value="{cumulDataAll>date}" dataType="date"/>
+														</viz.data:dimensions>
+														<viz.data:measures>
+															<viz.data:MeasureDefinition name="Cases" value="{cumulDataAll>totalconfirmed}"/>
+														</viz.data:measures>
+													</viz.data:FlattenedDataset>	
+												</viz:dataset>
+												<viz:feeds>
+													<viz.feeds:FeedItem type="Dimension" uid="timeAxis" values="Date"/>
+													<viz.feeds:FeedItem type="Measure" uid="valueAxis" values="Cases"/>
+												</viz:feeds>
+								</viz:VizFrame>
+									</l:content>
+										</l:BlockLayoutCell>
+								</l:BlockLayoutRow>
+								<l:BlockLayoutRow>
+									<l:BlockLayoutCell id="AllStateCumLayDec">
+										<l:content>
+									<viz:VizFrame
+									id="cumulDeceasedAll"
+									vizType="timeseries_column"
+									visible="false"
+									vizProperties="{
+										title:
+											{text:'Deaths',visible:true}
+											}"
+									uiConfig="{applicationSet:'fiori'}">
+												<viz:dataset>
+													<viz.data:FlattenedDataset data="{/dailyDataAll}">
+														<viz.data:dimensions>
+															<viz.data:DimensionDefinition name="Date" value="{cumulDataAll>date}" dataType="date"/>
+														</viz.data:dimensions>
+														<viz.data:measures>
+															<viz.data:MeasureDefinition name="Cases" value="{cumulDataAll>totaldeceased}"/>
+														</viz.data:measures>
+													</viz.data:FlattenedDataset>	
+												</viz:dataset>
+												<viz:feeds>
+													<viz.feeds:FeedItem type="Dimension" uid="timeAxis" values="Date"/>
+													<viz.feeds:FeedItem type="Measure" uid="valueAxis" values="Cases"/>
+												</viz:feeds>
+								</viz:VizFrame>
+									</l:content>
+										</l:BlockLayoutCell>
+								</l:BlockLayoutRow>
+								<l:BlockLayoutRow>
+									<l:BlockLayoutCell id="AllStateCumLayRec">
+										<l:content>
+								<viz:VizFrame
+									id="cumulRecoveredAll"
+									vizType="timeseries_column"
+									visible="false"
+									vizProperties="{
+										title:
+											{text:'Recovered',visible:true}
+											}"
+									uiConfig="{applicationSet:'fiori'}">
+												<viz:dataset>
+													<viz.data:FlattenedDataset data="{/dailyDataAll}">
+														<viz.data:dimensions>
+															<viz.data:DimensionDefinition name="Date" value="{cumulDataAll>date}" dataType="date"/>
+														</viz.data:dimensions>
+														<viz.data:measures>
+															<viz.data:MeasureDefinition name="Cases" value="{cumulDataAll>totalrecovered}"/>
+														</viz.data:measures>
+													</viz.data:FlattenedDataset>	
+												</viz:dataset>
+												<viz:feeds>
+													<viz.feeds:FeedItem type="Dimension" uid="timeAxis" values="Date"/>
+													<viz.feeds:FeedItem type="Measure" uid="valueAxis" values="Cases"/>
+												</viz:feeds>
+								</viz:VizFrame>
+									</l:content>
+										</l:BlockLayoutCell>
+								</l:BlockLayoutRow>
+								</l:BlockLayout>
+							</IconTabFilter>
+							<IconTabFilter text="State Trend" key="keyIndState">
+								<ComboBox id="comboBoxStateSel"
+									items="{stateNameModel>/states}"
+									selectedKey="{stateNameModel>/states/0/statecode}"
+									change="onStateChangeInd">
+									<core:ListItem key="{stateNameModel>statecode}" text="{stateNameModel>state}"/>
+								</ComboBox>
+								<l:BlockLayout background="Dashboard">
+								<l:BlockLayoutRow>
+									<l:BlockLayoutCell id="indStateDailyLayCon">
+										<l:content>
+								<viz:VizFrame
+									id="dailyConfirmedInd"
+									vizType="timeseries_column"
+									visible="true"
+									busy="true"
+									busyIndicatorDelay="0"
+									vizProperties="{
+										title:{text:'Confirmed Cases',visible:true},
+										dataLabel:{visible:true,showTotal:true}
+											}"
+									uiConfig="{applicationSet:'fiori'}">
+												<viz:dataset>
+													<viz.data:FlattenedDataset data="{IndStateCasesModel>/indStateCases/0/confirmed}">
+														<viz.data:dimensions>
+															<viz.data:DimensionDefinition name="Date" value="{IndStateCasesModel>date}" dataType="date"/>
+														</viz.data:dimensions>
+														<viz.data:measures>
+															<viz.data:MeasureDefinition name="Cases" value="{IndStateCasesModel>cases}"/>
+														</viz.data:measures>
+													</viz.data:FlattenedDataset>	
+												</viz:dataset>
+												<viz:feeds>
+													<viz.feeds:FeedItem type="Dimension" uid="timeAxis" values="Date"/>
+													<viz.feeds:FeedItem type="Measure" uid="valueAxis" values="Cases"/>
+												</viz:feeds>
+								</viz:VizFrame>
+									</l:content>
+										</l:BlockLayoutCell>
+								</l:BlockLayoutRow>
+								<l:BlockLayoutRow>
+									<l:BlockLayoutCell id="indStateDailyLayDec">
+										<l:content>
+								<viz:VizFrame
+									id="dailyDeceasedInd"
+									vizType="timeseries_column"
+									visible="true"
+									vizProperties="{
+										title:
+											{text:'Deaths',visible:true},
+											dataLabel:{visible:true,showTotal:true}
+											}"
+									uiConfig="{applicationSet:'fiori'}">
+												<viz:dataset>
+													<viz.data:FlattenedDataset data="{IndStateCasesModel>/indStateCases/0/deceased}">
+														<viz.data:dimensions>
+															<viz.data:DimensionDefinition name="Date" value="{IndStateCasesModel>date}" dataType="date"/>
+														</viz.data:dimensions>
+														<viz.data:measures>
+															<viz.data:MeasureDefinition name="Cases" value="{IndStateCasesModel>cases}"/>
+														</viz.data:measures>
+													</viz.data:FlattenedDataset>	
+												</viz:dataset>
+												<viz:feeds>
+													<viz.feeds:FeedItem type="Dimension" uid="timeAxis" values="Date"/>
+													<viz.feeds:FeedItem type="Measure" uid="valueAxis" values="Cases"/>
+												</viz:feeds>
+								</viz:VizFrame>	
+									</l:content>
+										</l:BlockLayoutCell>
+								</l:BlockLayoutRow>	
+								<l:BlockLayoutRow>
+									<l:BlockLayoutCell id="indStateDailyLayRec">
+										<l:content>
+								<viz:VizFrame
+									id="dailyRecoveredInd"
+									vizType="timeseries_column"
+									visible="true"
+									vizProperties="{
+										title:
+											{text:'Recovered',visible:true},
+											dataLabel:{visible:true,showTotal:true}
+											}"
+									uiConfig="{applicationSet:'fiori'}">
+												<viz:dataset>
+													<viz.data:FlattenedDataset data="{IndStateCasesModel>/indStateCases/0/recovered}">
+														<viz.data:dimensions>
+															<viz.data:DimensionDefinition name="Date" value="{IndStateCasesModel>date}" dataType="date"/>
+														</viz.data:dimensions>
+														<viz.data:measures>
+															<viz.data:MeasureDefinition name="Cases" value="{IndStateCasesModel>cases}"/>
+														</viz.data:measures>
+													</viz.data:FlattenedDataset>	
+												</viz:dataset>
+												<viz:feeds>
+													<viz.feeds:FeedItem type="Dimension" uid="timeAxis" values="Date"/>
+													<viz.feeds:FeedItem type="Measure" uid="valueAxis" values="Cases"/>
+												</viz:feeds>
+								</viz:VizFrame>	
+									</l:content>
+										</l:BlockLayoutCell>
+								</l:BlockLayoutRow>
+								</l:BlockLayout>
+							</IconTabFilter>
+							<IconTabFilter text="Essentials" key="keyEssential">
+								<Table id="idEssTable" 
+									growing="true" 
+									growingThreshold="20" 
+									items="{IndEssential>/essential}"
+									sticky="ColumnHeaders,HeaderToolbar"
+									class="sapFSemanticPageAlignContent"
+									width="auto">
+									<headerToolbar>
+										<OverflowToolbar>
+											
+											<!--<SearchField id="searchEss" placeholder="Search" width="50%" liveChange="onSearch"/>-->
+											<FacetFilter
+												id="idFacetFilter"
+												type="Simple"
+												showPersonalization="true"
+												showReset="true"
+												reset="handleFacetFilterReset"
+												confirm="handleConfirm"
+												lists="{EssFilter>/essFilter}">
+													<FacetFilterList
+														title="{EssFilter>EssFilter>type}"
+														mode="MultiSelect"
+														key="{key}"
+														items="{path:'EssFilter>values', templateShareable: true}" >
+															<FacetFilterItem
+																text="{EssFilter>text}"
+																key="{key}"/>
+													</FacetFilterList>
+												</FacetFilter>
+												
+										</OverflowToolbar>
+									</headerToolbar>
+										<columns>
+											<Column>
+												<ObjectStatus text="Organisation" state="Indication07"/>
+											</Column>
+											<Column>
+												<ObjectStatus text="Category" state="Indication05"/>
+											</Column>
+											<Column>
+												<ObjectStatus text="City" state="Indication04"/>
+											</Column>
+											<Column>
+												<ObjectStatus text="State" state="Indication06"/>
+											</Column>
+											<Column>
+												<ObjectStatus text="Contact" state="Indication07"/>
+											</Column>
+										</columns>
+										<items>
+											<ColumnListItem>
+												<cells>
+													<Text text="{IndEssential>nameoftheorganisation}"/>
+													<Text text="{IndEssential>category}"/>
+													<Text text="{IndEssential>city}"/>
+													<Text text="{IndEssential>state}"/>
+													<Text text="{IndEssential>phonenumber}"/>	
+												</cells>
+											</ColumnListItem>
+										</items>
+								</Table>
+							</IconTabFilter>
+							</items>
+						</IconTabBar>	
+		</semantic:content>		
+	
+	</semantic:SemanticPage>
+	
+</mvc:View>
